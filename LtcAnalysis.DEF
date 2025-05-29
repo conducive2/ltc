@@ -1,0 +1,13 @@
+LIBRARY LtcAnalysis
+EXPORTS
+startRecording @ 1
+stopRecording @ 2
+setCallback @ 3
+Myltc @ 4
+GetCurrentTimecode @ 5
+LTC_Init @ 6
+LTC_Start @ 7
+LTC_Stop @ 8
+LTC_SetStopTime @ 9
+LTC_GetCurrentTime @ 10
+LTC_Cleanup @ 11

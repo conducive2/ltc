@@ -1,0 +1,44 @@
+﻿  ltcaudio.c
+E:\dlltest\传入fps 线程处理\WaveOutLtc\ltcaudio.h(96,9): warning C4005: “_WIN32_WINNT”: 宏重定义
+  (编译源文件“WaveOutLtc/ltcaudio.c”)
+      C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0\shared\sdkddkver.h(228,10):
+      参见“_WIN32_WINNT”的前一个定义
+  
+E:\dlltest\传入fps 线程处理\WaveOutLtc\ltcaudio.c(108,24): warning C4244: “return”: 从“double”转换到“unsigned long”，可能丢失数据
+E:\dlltest\传入fps 线程处理\WaveOutLtc\ltcaudio.c(121,24): warning C4244: “return”: 从“double”转换到“int”，可能丢失数据
+E:\dlltest\传入fps 线程处理\WaveOutLtc\ltcaudio.c(198,22): warning C4047: “函数”:“int”与“char [39]”的间接级别不同
+E:\dlltest\传入fps 线程处理\WaveOutLtc\ltcaudio.c(198,22): warning C4024: “printMessage”: 形参和实参 1 的类型不同
+E:\dlltest\传入fps 线程处理\WaveOutLtc\ltcaudio.c(208,22): warning C4047: “函数”:“int”与“char [42]”的间接级别不同
+E:\dlltest\传入fps 线程处理\WaveOutLtc\ltcaudio.c(208,22): warning C4024: “printMessage”: 形参和实参 1 的类型不同
+E:\dlltest\传入fps 线程处理\WaveOutLtc\ltcaudio.c(216,22): warning C4047: “函数”:“int”与“char [31]”的间接级别不同
+E:\dlltest\传入fps 线程处理\WaveOutLtc\ltcaudio.c(216,22): warning C4024: “printMessage”: 形参和实参 1 的类型不同
+E:\dlltest\传入fps 线程处理\WaveOutLtc\ltcaudio.c(235,22): warning C4047: “函数”:“int”与“char [36]”的间接级别不同
+E:\dlltest\传入fps 线程处理\WaveOutLtc\ltcaudio.c(235,22): warning C4024: “printMessage”: 形参和实参 1 的类型不同
+E:\dlltest\传入fps 线程处理\WaveOutLtc\ltcaudio.c(245,22): warning C4047: “函数”:“int”与“char [44]”的间接级别不同
+E:\dlltest\传入fps 线程处理\WaveOutLtc\ltcaudio.c(245,22): warning C4024: “printMessage”: 形参和实参 1 的类型不同
+E:\dlltest\传入fps 线程处理\WaveOutLtc\ltcaudio.c(263,22): warning C4047: “函数”:“int”与“char [28]”的间接级别不同
+E:\dlltest\传入fps 线程处理\WaveOutLtc\ltcaudio.c(263,22): warning C4024: “printMessage”: 形参和实参 1 的类型不同
+E:\dlltest\传入fps 线程处理\WaveOutLtc\ltcaudio.c(202,40): warning C4244: “初始化”: 从“double”转换到“int”，可能丢失数据
+E:\dlltest\传入fps 线程处理\WaveOutLtc\ltcaudio.c(320,22): warning C4047: “函数”:“int”与“char [25]”的间接级别不同
+E:\dlltest\传入fps 线程处理\WaveOutLtc\ltcaudio.c(320,22): warning C4024: “printMessage”: 形参和实参 1 的类型不同
+E:\dlltest\传入fps 线程处理\WaveOutLtc\ltcaudio.c(406,12): warning C4113: “void (__cdecl *)()”和“void (__cdecl *)(void)”的参数列表不同
+E:\dlltest\传入fps 线程处理\WaveOutLtc\ltcaudio.c(1043,22): warning C4047: “函数”:“char *const ”与“char *[16]”的间接级别不同
+E:\dlltest\传入fps 线程处理\WaveOutLtc\ltcaudio.c(1043,22): warning C4024: “snprintf”: 形参和实参 1 的类型不同
+E:\dlltest\传入fps 线程处理\WaveOutLtc\ltcaudio.c(1045,22): warning C4047: “函数”:“char *const ”与“char *[16]”的间接级别不同
+E:\dlltest\传入fps 线程处理\WaveOutLtc\ltcaudio.c(1045,22): warning C4024: “snprintf”: 形参和实参 1 的类型不同
+E:\dlltest\传入fps 线程处理\WaveOutLtc\ltcaudio.c(1051,43): warning C4047: “函数”:“const char *”与“char *[16]”的间接级别不同
+E:\dlltest\传入fps 线程处理\WaveOutLtc\ltcaudio.c(1051,43): warning C4024: “time_str_to_int”: 形参和实参 1 的类型不同
+E:\dlltest\传入fps 线程处理\WaveOutLtc\ltcaudio.c(1054,42): warning C4047: “函数”:“const char *”与“char *[16]”的间接级别不同
+E:\dlltest\传入fps 线程处理\WaveOutLtc\ltcaudio.c(1054,42): warning C4024: “time_str_to_int”: 形参和实参 1 的类型不同
+E:\dlltest\传入fps 线程处理\WaveOutLtc\ltcaudio.c(1108,29): warning C4013: “_beginthreadex”未定义；假设外部返回 int
+E:\dlltest\传入fps 线程处理\WaveOutLtc\ltcaudio.c(1216,10): warning C4133: “函数”: 从“LPTSTR”到“const char *const ”的类型不兼容
+E:\dlltest\传入fps 线程处理\WaveOutLtc\ltcaudio.c(1206,11): warning C4047: “初始化”:“MMRESULT”与“void *”的间接级别不同
+    正在创建库 E:\dlltest\传入fps 线程处理\Release\LtcAnalysis.lib 和对象 E:\dlltest\传入fps 线程处理\Release\LtcAnalysis.exp
+  正在生成代码
+  12 of 66 functions (18.2%) were compiled, the rest were copied from previous compilation.
+    0 functions were new in current compilation
+    3 functions had inline decision re-evaluated but remain unchanged
+  已完成代码的生成
+  LtcAnalysis.vcxproj -> E:\dlltest\传入fps 线程处理\Release\LtcAnalysis.dll
+  'pwsh.exe' 不是内部或外部命令，也不是可运行的程序
+  或批处理文件。
