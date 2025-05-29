@@ -1,5 +1,8 @@
-startRecording @ 1: 启动录制功能。
+这是一个通过3.5接口实时生成与解析timecode的库，
+基础的逻辑是https://github.com/x42/libltc
+我只是在上面加上了实时的解析与生成的功能
 
+startRecording @ 1: 启动录制功能。
 
 stopRecording @ 2: 停止录制功能。
 
