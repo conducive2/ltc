@@ -1,5 +1,4 @@
 
-
 #include "ltcaudio.h"  
 
 
@@ -107,8 +106,7 @@ unsigned long timecode_to_frames(const SMPTETimecode* tc) {
         tc->mins * 60 * FPS +
         tc->secs * FPS +
         tc->frame;
-}
-// 计算两帧之间的实际帧差（考虑进制）
+} 
 int calculateFrameDeviation(const SMPTETimecode* current, const SMPTETimecode* previous) {
     unsigned long current_frames = timecode_to_frames(current);
     if (current_frames < 10) return 3;
@@ -160,8 +158,7 @@ __declspec(dllexport) void __stdcall Myltc(ltcsnd_sample_t* sound, int bufferSiz
             fp = fopen("time_info11.txt", "a");
             fprintf(fp, "time %s", buffer);
             fclose(fp);
-
-            // 存储时间码值到全局变量
+             
             SetCurrentTimecode(int_timecode_to_frames(&stime));
         }
         prevStime = stime;
@@ -195,7 +192,7 @@ DWORD WINAPI RecordingThread(LPVOID lpParameter)
 {
     paData* data = (paData*)malloc(sizeof(paData));
     if (data == NULL) {
-        printMessage("Failed to allocate memory for paData.\n");
+        //printMessage("Failed to allocate memory for paData.\n");
         return 1;
     }
     g_bIsRecording = TRUE;
@@ -205,15 +202,14 @@ DWORD WINAPI RecordingThread(LPVOID lpParameter)
     data->frameIndex = 0;
     data->recordedSamples = (float*)malloc(numSamples * sizeof(float));
     if (data->recordedSamples == NULL) {
-        printMessage("Failed to allocate memory for recording.\n");
+        //printMessage("Failed to allocate memory for recording.\n");
         free(data);
         return 1;
     }
-
-    // 创建音频事件，用于替代回调函数
+     
     HANDLE hAudioEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
     if (hAudioEvent == NULL) {
-        printMessage("Failed to create audio event.\n");
+        //printMessage("Failed to create audio event.\n");
         free(data->recordedSamples);
         free(data);
         return 1;
@@ -229,20 +225,86 @@ DWORD WINAPI RecordingThread(LPVOID lpParameter)
     waveFormat.wBitsPerSample = 8;
     waveFormat.cbSize = 0;
 
-    // CALLBACK_EVENT 模式，将 hAudioEvent 传入
+
+    //fp = fopen("time_info11.txt", "a");
+    //fprintf(fp, "up\n");
+    //fclose(fp);
+
+
+    //if (!data || !data->recordedSamples) {
+    //    //printMessage("Memory allocation failed.\n");
+    //    if (hAudioEvent) CloseHandle(hAudioEvent);
+    //    if (data) free(data);
+    //    return 1;
+    //}
+    //fp = fopen("time_info11.txt", "a");
+    //fprintf(fp, "up111\n");
+    //fclose(fp);
+    //// 检查音频设备
+    //UINT inputDevices = 0;
+    //UINT outputDevices = 0;
+
+    //// 安全地获取设备数量
+    //__try {
+    //    inputDevices = waveInGetNumDevs();
+    //    outputDevices = waveOutGetNumDevs();
+    //}
+    //__except (EXCEPTION_EXECUTE_HANDLER) {
+    //    //printMessage("Failed to check audio devices (driver issue?).\n");
+    //    CloseHandle(hAudioEvent);
+    //    free(data->recordedSamples);
+    //    free(data);
+    //    return 1;
+    //}
+
+    //fp = fopen("time_info11.txt", "a");
+    //fprintf(fp, "up1133\n");
+    //fclose(fp);
+    //if (inputDevices == 0 && outputDevices == 0) {
+    //    fp = fopen("time_info11.txt", "a");
+    //    fprintf(fp, "No audio devices available.\n");
+    //    fclose(fp);
+    //    //printMessage("No audio devices available.\n");
+    //    //CloseHandle(hAudioEvent);
+ 
+
+
+    //    free(data->recordedSamples);
+
+   
+
+    // 
+    //    return 1;
+    //}
+ 
+    //// 继续正常的 waveInOpen 调用
+    //result = waveInOpen(&hWaveIn, WAVE_MAPPER, &waveFormat, (DWORD_PTR)hAudioEvent, (DWORD_PTR)data, CALLBACK_EVENT);
+    //if (result != MMSYSERR_NOERROR) {
+    //    //printMessage("Failed to open audio input device.\n");
+    //    CloseHandle(hAudioEvent);
+    //    free(data->recordedSamples);
+    //    free(data);
+    //    return 1;
+    //}
+
+    //fp = fopen("time_info11.txt", "a");
+    //fprintf(fp, "up22\n");
+    //fclose(fp);
+
+
+     
     result = waveInOpen(&hWaveIn, WAVE_MAPPER, &waveFormat, (DWORD_PTR)hAudioEvent, (DWORD_PTR)data, CALLBACK_EVENT);
     if (result != MMSYSERR_NOERROR) {
-        printMessage("Failed to open audio input device.\n");
+        //printMessage("Failed to open audio input device.\n");
         CloseHandle(hAudioEvent);
         free(data->recordedSamples);
         free(data);
         return 1;
     }
-
-    // 准备音频缓冲区
+      
     waveHeader.lpData = (LPSTR)malloc(numSamples);
     if (waveHeader.lpData == NULL) {
-        printMessage("Failed to allocate memory for wave header.\n");
+        //printMessage("Failed to allocate memory for wave header.\n");
         waveInClose(hWaveIn);
         CloseHandle(hAudioEvent);
         free(data->recordedSamples);
@@ -260,7 +322,7 @@ DWORD WINAPI RecordingThread(LPVOID lpParameter)
 
     result = waveInStart(hWaveIn);
     if (result != MMSYSERR_NOERROR) {
-        printMessage("Failed to start recording.\n");
+        //printMessage("Failed to start recording.\n");
         free(waveHeader.lpData);
         waveInClose(hWaveIn);
         CloseHandle(hAudioEvent);
@@ -268,23 +330,19 @@ DWORD WINAPI RecordingThread(LPVOID lpParameter)
         free(data);
         return 1;
     }
-
-    // 线程循环：等待音频事件，并在独立线程中处理音频数据
+     
     while (g_bIsRecording) {
-        if (WaitForSingleObject(hAudioEvent, 100) == WAIT_OBJECT_0) {
-            // 检查缓冲区是否已完成录音
+        if (WaitForSingleObject(hAudioEvent, 100) == WAIT_OBJECT_0) { 
             if (waveHeader.dwFlags & WHDR_DONE) {
                 if (waveHeader.dwBytesRecorded > 0) {
                     Myltc((ltcsnd_sample_t*)waveHeader.lpData,
                         waveHeader.dwBytesRecorded / sizeof(ltcsnd_sample_t));
-                }
-                // 重新加入缓冲区以继续录音
+                } 
                 waveInAddBuffer(hWaveIn, &waveHeader, sizeof(WAVEHDR));
             }
         }
     }
-
-    // 停止录音及资源清理
+     
     waveInReset(hWaveIn);
     waveInStop(hWaveIn);
     waveInUnprepareHeader(hWaveIn, &waveHeader, sizeof(WAVEHDR));
@@ -317,7 +375,7 @@ __declspec(dllexport) DWORD __stdcall startRecording(int fps)
     g_hRecordingEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
     g_hRecordingThread = CreateThread(NULL, 0, RecordingThread, NULL, 0, NULL);
     if (g_hRecordingThread == NULL) {
-        printMessage("Failed to create thread.");
+        //printMessage("Failed to create thread.");
         return 1;
     }
     hThread = g_hRecordingThread;
@@ -331,10 +389,7 @@ __declspec(dllexport) DWORD __stdcall startRecording(int fps)
   }
 
 __declspec(dllexport) void   __stdcall  stopRecording() { 
- 
-    fp = fopen("time_info11.txt", "a");
-    fprintf(fp, "1\n");
-    fclose(fp);
+  
     if (g_hRecordingEvent != NULL && g_hRecordingThread != NULL) {
         g_bIsRecording = FALSE; // 标记停止
         SetEvent(g_hRecordingEvent);
@@ -507,19 +562,18 @@ void LogClose() {
     DeleteCriticalSection(&logLock);
 }
 static void FreeResources() {
-    LogMessage("FreeResources开始...");
+    //LogMessage("FreeResources开始...");
     LTC_State* state = GetState();
     if (!state) {
-        LogMessage("FreeResources: 无状态可清理");
+        //LogMessage("FreeResources: 无状态可清理");
         return;
     }
     if (state && state->running) {
 	    LTC_Stop();
     }
-
-    // 1. 停止线程（确保音频回调不再触发）
+     
     if (state->running) {
-        LogMessage("停止音频线程...");
+        //LogMessage("停止音频线程...");
         state->running = 0;
         if (g_thread.hThread) {
             WaitForSingleObject(g_thread.hThread, 1000);
@@ -527,23 +581,19 @@ static void FreeResources() {
             g_thread.hThread = NULL;
         }
     }
-
-    // 2. 清理音频设备
+     
     if (state->hWaveOut) {
-        LogMessage("清理音频设备...");
-        waveOutReset(state->hWaveOut); // 立即停止播放
-
-        // 安全释放音频块
+        //LogMessage("清理音频设备...");
+        waveOutReset(state->hWaveOut); 
+         
         if (state->blocks && state->blockCount > 0) {
             for (int i = 0; i < state->blockCount; i++) {
                 if (!state->blocks[i]) continue;
-
-                // 取消prepare（忽略错误）
+                 
                 if (state->blocks[i]->dwFlags & WHDR_PREPARED) {
                     waveOutUnprepareHeader(state->hWaveOut, state->blocks[i], sizeof(WAVEHDR));
                 }
-
-                // 释放内存
+                 
                 free(state->blocks[i]->lpData);
                 free(state->blocks[i]);
             }
@@ -554,21 +604,19 @@ static void FreeResources() {
         waveOutClose(state->hWaveOut);
         state->hWaveOut = NULL;
     }
-
-    // 3. 清理编码器
+     
     if (state->encoder) {
         ltc_encoder_free(state->encoder);
         state->encoder = NULL;
     }
-
-    // 4. 删除临界区并释放状态
+     
     DeleteCriticalSection(&state->cs);
     EnterCriticalSection(&g_stateLock);
     free(g_state);
     g_state = NULL;
     LeaveCriticalSection(&g_stateLock);
 
-    LogMessage("FreeResources完成");
+    //LogMessage("FreeResources完成");
     //// 清理音频资源
     //if (state->hWaveOut) {
     //    waveOutReset(state->hWaveOut);
@@ -580,21 +628,16 @@ static void FreeResources() {
     //        }
     //    }
     //    waveOutClose(state->hWaveOut);
-    //}
-    // 清理音频资源的安全版本
-    if (state->hWaveOut) {
-        // 1. 先停止播放
+    //} 
+    if (state->hWaveOut) { 
         waveOutReset(state->hWaveOut);
-
-        // 2. 等待所有块完成
+         
         for (int i = 0; i < state->blockCount; i++) {
-            if (state->blocks[i]) {
-                // 等待块不再处于播放状态
+            if (state->blocks[i]) { 
                 while (state->blocks[i]->dwFlags & WHDR_INQUEUE) {
                     Sleep(10);
                 }
-
-                // 安全 unprepare
+                 
                 if (state->blocks[i]->dwFlags & WHDR_PREPARED) {
                     MMRESULT res = waveOutUnprepareHeader(
                         state->hWaveOut,
@@ -602,31 +645,27 @@ static void FreeResources() {
                         sizeof(WAVEHDR));
 
                     if (res != MMSYSERR_NOERROR) {
-                        LogMessage("Warning: waveOutUnprepareHeader failed for block %d (error %d)",
-                            i, res);
+                        /*LogMessage("Warning: waveOutUnprepareHeader failed for block %d (error %d)",
+                            i, res);*/
                     }
                 }
-
-                // 释放内存
+                 
                 if (state->blocks[i]->lpData) {
                     free(state->blocks[i]->lpData);
                     state->blocks[i]->lpData = NULL;
                 }
 
                 free(state->blocks[i]);
-                state->blocks[i] = NULL;  // 重要：指针置NULL
+                state->blocks[i] = NULL;  
             }
         }
-
-        // 3. 最后关闭设备
+         
         MMRESULT closeRes = waveOutClose(state->hWaveOut);
         if (closeRes != MMSYSERR_NOERROR) {
-            LogMessage("Warning: waveOutClose failed (error %d)", closeRes);
+            //LogMessage("Warning: waveOutClose failed (error %d)", closeRes);
         }
-        state->hWaveOut = NULL;  // 重要：句柄置NULL
-    }
-    LogMessage("FreeResources,6\n");
-    // 清理其他资源
+        state->hWaveOut = NULL;   
+    } 
     if (state->encoder) ltc_encoder_free(state->encoder);
     DeleteCriticalSection(&state->cs);
 
@@ -634,8 +673,7 @@ static void FreeResources() {
     free(g_state);
     g_state = NULL;
     LeaveCriticalSection(&g_stateLock);
-
-    LogMessage("FreeResources,7 end\n");
+     
 	//if (!g_state) return; // 提前返回
 	//// 先停止线程
 	//if (g_state && g_state->running) {
@@ -667,16 +705,14 @@ static void FreeResources() {
 }
 
 
-
-// 辅助函数：解析时间字符串
+ 
 static int ParseTime(const char* str, int* time) { 
     if (!str || !time) return 0;
 
     char buf[32];
     strncpy(buf, str, sizeof(buf) - 1);
     buf[sizeof(buf) - 1] = '\0';
-
-    // 替换所有分隔符为冒号
+     
     for (char* p = buf; *p; ++p) {
         if (*p == '-' || *p == ' ' || *p == ';') *p = ':';
     }
@@ -684,11 +720,9 @@ static int ParseTime(const char* str, int* time) {
     return sscanf(buf, "%d:%d:%d:%d",
         &time[0], &time[1],
         &time[2], &time[3]) == 4;
-}
-// 音频回调函数
+} 
 void CALLBACK WaveOutProc(HWAVEOUT hwo, UINT uMsg, DWORD dwInstance, DWORD dwParam1, DWORD dwParam2) { 
-    if (uMsg != WOM_DONE) return; 
-    // 线程安全访问g_state
+    if (uMsg != WOM_DONE) return;  
     EnterCriticalSection(&g_stateLock);
     if (g_state) {
         InterlockedIncrement(&g_state->waveFreeBlockCount);
@@ -697,21 +731,19 @@ void CALLBACK WaveOutProc(HWAVEOUT hwo, UINT uMsg, DWORD dwInstance, DWORD dwPar
 
 
 }
-
-// 初始化实现
+ 
 __declspec(dllexport) int __stdcall LTC_Init(const char* startTime, const char* endTime, const char* fps) {
     if (g_state) {
-        LogMessage("清理现有LTC状态...");
+        //LogMessage("清理现有LTC状态...");
         LTC_Cleanup(); //  清理接口
     }
 
     g_state = (LTC_State*)calloc(1, sizeof(LTC_State));
-    if (!g_state) return -1;
-    // 初始化临界区（必须在其他操作之前）
+    if (!g_state) return -1; 
     InitializeCriticalSection(&g_state->cs);
-    LogMessage("1\n");
+    //LogMessage("1\n");
 
-    LogMessage("startTime %s ,endtime %s \n", startTime, endTime);
+    //LogMessage("startTime %s ,endtime %s \n", startTime, endTime);
  
       
 	g_state->running = 0;
@@ -724,13 +756,11 @@ __declspec(dllexport) int __stdcall LTC_Init(const char* startTime, const char* 
     } 
 
 	InitializeCriticalSection(&g_state->cs);
-
-	// 初始化编码器
+     
 	g_state->encoder = ltc_encoder_create(48000, atof(fps),
 		atof(fps) == 25 ? LTC_TV_625_50 : LTC_TV_525_60, LTC_USE_DATE);
 	if (!g_state->encoder) return -2;
-
-	// 设置初始时间
+     
 	int start[4];
 	if (!ParseTime(startTime, start)) return -3;
 
@@ -740,10 +770,9 @@ __declspec(dllexport) int __stdcall LTC_Init(const char* startTime, const char* 
 	st.secs = start[2];
 	st.frame = start[3];
 	ltc_encoder_set_timecode(g_state->encoder, &st);
-
-	// 初始化音频块（原AllocateBlocks逻辑）
-	g_state->blockCount = 8; // 双缓冲
-	g_state->framesPerBlock = 1; // 每块帧数
+     
+	g_state->blockCount = 8;  
+	g_state->framesPerBlock = 1;  
 	int blockSize = ltc_encoder_get_buffersize(g_state->encoder) * g_state->framesPerBlock;
 
 	g_state->blocks = (WAVEHDR**)calloc(g_state->blockCount, sizeof(WAVEHDR*));
@@ -752,8 +781,7 @@ __declspec(dllexport) int __stdcall LTC_Init(const char* startTime, const char* 
 		g_state->blocks[i]->lpData = (char*)calloc(blockSize, 1);
 		g_state->blocks[i]->dwBufferLength = blockSize;
 	}
-
-	// 初始化音频输出
+     
 	WAVEFORMATEX wfx = {
 		.wFormatTag = WAVE_FORMAT_PCM,
 		.nChannels = 1,
@@ -771,12 +799,11 @@ __declspec(dllexport) int __stdcall LTC_Init(const char* startTime, const char* 
 	}
 
 	return 0;
-}
-// 设置停止时间（线程安全）
+} 
 __declspec(dllexport) int __stdcall LTC_SetStopTime(const char* stopTime) {
 	if (!g_state) return -1;
     EnterCriticalSection(&g_state->cs);  
-    LogMessage("设置停止时间: %s", stopTime);
+    //LogMessage("设置停止时间: %s", stopTime);
 	int newTime[4];
     if (!ParseTime(stopTime, newTime)) {
         LeaveCriticalSection(&g_state->cs);
@@ -785,7 +812,7 @@ __declspec(dllexport) int __stdcall LTC_SetStopTime(const char* stopTime) {
     strncpy(g_state->endTime, stopTime, sizeof(g_state->endTime) - 1);
     g_state->endTime[sizeof(g_state->endTime) - 1] = '\0';
     memcpy(g_state->stopTime, newTime, sizeof(newTime));
-    g_state->stopTimeUpdated = 1;  // 设置更新标志
+    g_state->stopTimeUpdated = 1;   
 
     LeaveCriticalSection(&g_state->cs);
 	return 0;
@@ -794,15 +821,13 @@ __declspec(dllexport) int __stdcall LTC_SetStopTime(const char* stopTime) {
 __declspec(dllexport) int __stdcall LTC_Stop() {
 	if (!g_state || !g_state->running) return -1;
 
-	g_state->running = 0;
-	// 等待线程退出（最多1秒）
+	g_state->running = 0; 
 	if (g_thread.hThread) {
 		WaitForSingleObject(g_thread.hThread, 1000);
 		CloseHandle(g_thread.hThread);
 		g_thread.hThread = NULL;
 	}
-
-	// 取消所有未完成的音频块
+     
 	for (int i = 0; i < g_state->blockCount; i++) {
 		if (g_state->blocks[i]->dwFlags & WHDR_INQUEUE) {
 			waveOutReset(g_state->hWaveOut);
@@ -814,12 +839,12 @@ __declspec(dllexport) int __stdcall LTC_Stop() {
 }
 
 __declspec(dllexport) void __stdcall LTC_Cleanup() {
-    LogMessage("xojo set ltcCleanip\n");
+    //LogMessage("xojo set ltcCleanip\n");
 	FreeResources();
 } 
 
 static int TimeToFrames(int hours, int mins, int secs, int frames, double fps) {
-    LogMessage("TimeToFrames  %d-%d-%d-%d   int %d \n", hours, mins, mins, frames,fps);
+    //LogMessage("TimeToFrames  %d-%d-%d-%d   int %d \n", hours, mins, mins, frames,fps);
     return frames +
         (int)(secs * fps) +
         (int)(mins * 60 * fps) +
@@ -949,9 +974,8 @@ static int TimeToFrames(int hours, int mins, int secs, int frames, double fps) {
 //}
 int time_str_to_int(const char* time_str) {
     int time_int;
-    sscanf(time_str, "%8d", &time_int); // 直接读取为8位整数
-
-    //LogMessage("time to int %d",time_int);
+    sscanf(time_str, "%8d", &time_int);  
+     
     return time_int;
 }
 
@@ -965,8 +989,7 @@ static unsigned __stdcall LTC_Thread(void* param) {
     const int bufferSize = ltc_encoder_get_buffersize(state->encoder);
     int currentBlock = 0;
     DWORD frameInterval = (DWORD)(1000.0 / atof(state->fps));
-
-    // 安全解析结束时间码
+     
     int stopTime[4] = { 0 };
     {
         char copy[32];
@@ -979,8 +1002,7 @@ static unsigned __stdcall LTC_Thread(void* param) {
             stopTime[i] = atoi(token);
             token = strtok_s(NULL, ":-", &next);
         }
-    }
-    // 准备音频块（带错误处理）
+    } 
     for (int i = 0; i < state->blockCount; i++) {
         if (!state->blocks[i]) continue;
 
@@ -990,37 +1012,31 @@ static unsigned __stdcall LTC_Thread(void* param) {
             sizeof(WAVEHDR));
 
         if (res != MMSYSERR_NOERROR) {
-            LogMessage("waveOutPrepareHeader failed: %d", res);
+            //LogMessage("waveOutPrepareHeader failed: %d", res);
             state->running = 0;
             return -1;
         }
     }
     int currentStopTime[4];
-    LogMessage("LTC_Thread start\n");
-    // 主循环
-    while (1) {
-        // 安全获取运行状态
+    //LogMessage("LTC_Thread start\n"); 
+    while (1) { 
         EnterCriticalSection(&state->cs);
         BOOL running = state->running;
         LeaveCriticalSection(&state->cs);
         if (!running) break;
-
-        // 处理当前音频块
+         
         WAVEHDR* block = state->blocks[currentBlock];
-        if (!(block->dwFlags & WHDR_INQUEUE)) {
-            // 生成LTC数据
+        if (!(block->dwFlags & WHDR_INQUEUE)) { 
             memset(block->lpData, 0, bufferSize);
             ltc_encoder_encode_frame(state->encoder);
 
             int len = 0;
             ltcsnd_sample_t* buf = ltc_encoder_get_bufptr(state->encoder, &len, 1);
             memcpy(block->lpData, buf, len);
-            block->dwBufferLength = len;
-
-            // 写入音频设备
+            block->dwBufferLength = len; 
             MMRESULT res = waveOutWrite(state->hWaveOut, block, sizeof(WAVEHDR));
             if (res != MMSYSERR_NOERROR) {
-                LogMessage("waveOutWrite failed: %d", res);
+                //LogMessage("waveOutWrite failed: %d", res);
                 break;
             }
             if (state->stopTimeUpdated) {
@@ -1029,8 +1045,7 @@ static unsigned __stdcall LTC_Thread(void* param) {
                 state->stopTimeUpdated = 0;
                 LeaveCriticalSection(&state->cs);
                 LogMessage("set end %d-%d-%d-%d\n", state->stopTime[0], state->stopTime[1], state->stopTime[2], state->stopTime[3]);
-            }
-            // 检查停止条件（线程安全）
+            } 
             EnterCriticalSection(&state->cs);
             SMPTETimecode stt;
             ltc_encoder_get_timecode(state->encoder, &stt);
@@ -1058,18 +1073,17 @@ static unsigned __stdcall LTC_Thread(void* param) {
 
             if (shouldStop) {
                 state->running = 0;
-                LogMessage("end%d-%d-%d-%d ,currentFrames %d stopFrames %d \n", state->stopTime[0], state->stopTime[1], state->stopTime[2], state->stopTime[3], currentFrames, stopFrames);
+                //LogMessage("end%d-%d-%d-%d ,currentFrames %d stopFrames %d \n", state->stopTime[0], state->stopTime[1], state->stopTime[2], state->stopTime[3], currentFrames, stopFrames);
                 break;
             }
-            ltc_encoder_inc_timecode(state->encoder);
-            // 移动至下一个块
+            ltc_encoder_inc_timecode(state->encoder); 
             currentBlock = (currentBlock + 1) % state->blockCount;
         }
         else {
             Sleep(5); // 避免忙等待
         }
     }
-    LogMessage("LTC_Thread end\n");
+    //LogMessage("LTC_Thread end\n");
     // 安全清理
     if (state->hWaveOut) {
         for (int i = 0; i < state->blockCount; i++) {
@@ -1083,7 +1097,7 @@ static unsigned __stdcall LTC_Thread(void* param) {
             }
         }
     }
-    LogMessage("LTC_Thread end return \n");
+    //LogMessage("LTC_Thread end return \n");
     return 0;
 }
 
@@ -1092,17 +1106,16 @@ static unsigned __stdcall LTC_Thread(void* param) {
 __declspec(dllexport) int __stdcall LTC_Start() {
 	if (!g_state || g_state->running) return -1;
 
-	// 确保之前的线程已退出
+ 
 	if (g_thread.hThread) {
 		WaitForSingleObject(g_thread.hThread, 1000);
 		CloseHandle(g_thread.hThread);
 		g_thread.hThread = NULL;
 	}
-
-	// 重置停止标志
+     
 	g_state->running = 1;
 	g_state->waveFreeBlockCount = g_state->blockCount;
-    LogMessage("2222\n");
+    //LogMessage("2222\n");
 	// 创建生成线程
 	g_thread.state = g_state;
 	g_thread.hThread = (HANDLE)_beginthreadex(
@@ -1243,25 +1256,19 @@ WAVEHDR** AllocateBlocks(int count, int blockdatasize)
 int LoadLtcData(WAVEHDR* block, LTCEncoder* pencoder, int blockDataSize, int vFrames)
 {
 
-	ltcsnd_sample_t* buf; // 声明一个指向LTC样本的指针变量
-	memset(block->lpData, 0, blockDataSize); // 将音频块的数据区域初始化为零
-
-	int len; // 声明一个变量用于存储每个LTC帧的长度
-	for (int i = 0; i < vFrames; i++) // 循环加载指定数量的LTC帧
+	ltcsnd_sample_t* buf;  
+	memset(block->lpData, 0, blockDataSize);   
+	int len;  
+	for (int i = 0; i < vFrames; i++) 
 	{
-		ltc_encoder_encode_frame(pencoder); // 对当前时间码进行编码生成一帧LTC数据
-		buf = ltc_encoder_get_bufptr(pencoder, &len, 1); // 获取编码后的LTC数据和其长度
-
-		// 将获取到的LTC数据复制到音频块的数据区域中，每次复制的起始位置根据帧长度和当前帧的索引计算得到
-		memcpy(block->lpData + (len * i), buf, len);
-
-		ltc_encoder_inc_timecode(pencoder); // 增加LTC编码器中的时间码，准备下一帧的编码
-
-	}
-
-	block->dwBufferLength = len * vFrames; // 设置音频块的数据长度，即为单帧数据长度乘以帧数
-	block->dwUser = 0; // 将dwUser字段设置为0，通常用于存储自定义数据
-	return 0; // 返回0，表示加载LTC数据的操作执行成功 
+		ltc_encoder_encode_frame(pencoder);  
+		buf = ltc_encoder_get_bufptr(pencoder, &len, 1); 
+		memcpy(block->lpData + (len * i), buf, len); 
+		ltc_encoder_inc_timecode(pencoder);   
+	} 
+	block->dwBufferLength = len * vFrames;  
+	block->dwUser = 0;  
+	return 0;  
 }
 
 
